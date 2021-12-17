@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'markdownx',
     'blog',
     'getting_started',
+    'leaderboard.apps.LeaderboardConfig',
 ]
 
 MIDDLEWARE = [
