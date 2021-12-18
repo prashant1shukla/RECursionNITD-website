@@ -2,7 +2,7 @@ import time
 
 from apscheduler.schedulers.background import BackgroundScheduler
 from django.conf import settings
-from .apis import CodeforcesAPI
+from leaderboard.apis import CodeforcesAPI
 from leaderboard.models import Codeforces
 
 

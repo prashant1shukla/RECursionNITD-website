@@ -1,7 +1,7 @@
 import time
 
 from .models import Codeforces
-from .leaderboard_scheduler.apis import CodeforcesAPI
+from leaderboard.apis import CodeforcesAPI
 
 
 def main():
