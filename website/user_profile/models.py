@@ -8,13 +8,14 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django.contrib.auth import get_user_model
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
 import os
 from PIL import Image
 from io import BytesIO
 from django.core.files.uploadedfile import InMemoryUploadedFile
 import sys
+import leaderboard.apis as apis
 
 def content_file_name(instance,filename):
 	ext="png"
@@ -59,8 +60,19 @@ class Profile(models.Model):
     class Meta:
         managed = True
 
+
 @receiver(post_save, sender=User)
 def update_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
     instance.profile.save()
+
+
+@receiver(pre_save, sender=Profile)
+def removeInvalidCFHandle(sender, instance, raw, using, update_fields, **kwargs):
+    cf = apis.CodeforcesAPI()
+    cf_url = instance.url_Codeforces
+    if not cf_url:
+        return
+    if not cf.isValidHandle(cf_url, is_url=True):
+        instance.url_Codeforces = ''

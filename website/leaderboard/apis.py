@@ -1,7 +1,7 @@
 from typing import List
 from django.conf import settings
 from os import path
-from user_profile.models import Profile
+import user_profile.models as user_profile_models
 import json
 import requests
 
@@ -40,6 +40,7 @@ class CodeforcesAPI:
         return usernames
 
     def individualRequest(self, handle: str) -> json:
+        print(f"requesting for {handle}")
         if not handle:
             return {}
         url = self.base_url + handle
@@ -58,7 +59,7 @@ class CodeforcesAPI:
 
     def handlePurifier(self):
         print('running purifier()')
-        profiles = Profile.objects.all()
+        profiles = user_profile_models.Profile.objects.all()
         for profile in profiles:
             cf_url = profile.url_Codeforces
             if cf_url and not self.isValidHandle(cf_url):
