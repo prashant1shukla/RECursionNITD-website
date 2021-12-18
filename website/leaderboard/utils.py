@@ -22,3 +22,8 @@ def main():
         )
         if created:
             print(obj)
+
+
+def CFPurifier():
+    cf = CodeforcesAPI()
+    cf.handlePurifier()

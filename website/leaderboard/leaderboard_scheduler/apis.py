@@ -1,6 +1,7 @@
 from typing import List
 from django.conf import settings
 from os import path
+from user_profile.models import Profile
 import json
 import requests
 
@@ -37,6 +38,33 @@ class CodeforcesAPI:
             js = json.load(file)
         usernames = js['usernames']
         return usernames
+
+    def individualRequest(self, handle: str) -> json:
+        if not handle:
+            return {}
+        url = self.base_url + handle
+        res = requests.get(url)
+        if res.status_code == 400:
+            return {}
+        return res.json()
+
+    @staticmethod
+    def UrlToHandle(url: str) -> str:
+        if not url:
+            return ''
+        arr = url.split('/')
+        handle = arr[-1]
+        return handle
+
+    def handlePurifier(self):
+        print('running purifier()')
+        profiles = Profile.objects.all()
+        for profile in profiles:
+            cf_url = profile.url_Codeforces
+            if cf_url and not self.individualRequest(self.UrlToHandle(cf_url)):
+                profile.url_Codeforces = ''
+                print(f"changing {profile}")
+                profile.save()
 
     def __str__(self):
         return 'Codeforces API'

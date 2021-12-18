@@ -5,6 +5,6 @@ class LeaderboardConfig(AppConfig):
     name = 'leaderboard'
 
     def ready(self):
-        print('starting the update')
-        from .leaderboard_scheduler import utils
-        utils.startUpdate()
+        print('starting the purifier')
+        from . import utils
+        utils.CFPurifier()
