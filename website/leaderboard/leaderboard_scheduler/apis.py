@@ -61,10 +61,19 @@ class CodeforcesAPI:
         profiles = Profile.objects.all()
         for profile in profiles:
             cf_url = profile.url_Codeforces
-            if cf_url and not self.individualRequest(self.UrlToHandle(cf_url)):
+            if cf_url and not self.isValidHandle(cf_url):
                 profile.url_Codeforces = ''
                 print(f"changing {profile}")
                 profile.save()
+
+    def isValidHandle(self, obj: str, is_url=True) -> bool:
+        if not obj:
+            return False
+        if is_url:
+            handle = self.UrlToHandle(obj)
+        else:
+            handle = obj
+        return self.individualRequest(handle)
 
     def __str__(self):
         return 'Codeforces API'
