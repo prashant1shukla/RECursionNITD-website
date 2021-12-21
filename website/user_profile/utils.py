@@ -26,4 +26,4 @@ class ProfileMatcher:
         return 0
 
     def __str__(self):
-        return 'ProfileMatcher object with query="{}", ratio_threshold={} .'.format(self.query,self.ratio_threshold)
+        return 'ProfileMatcher object with query="{}", ratio_threshold={} .'.format(self.query, self.ratio_threshold)
