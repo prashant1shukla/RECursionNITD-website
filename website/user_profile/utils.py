@@ -8,7 +8,6 @@ from difflib import SequenceMatcher
 from apscheduler.schedulers.background import BackgroundScheduler
 from django.conf import settings
 from django.core.mail import send_mail
-from datetime import datetime as dt
 
 from .models import Profile
 
@@ -74,12 +73,12 @@ def profilePicAdder():
 
 
 def DPAddScheduler():
-    now_time = dt.now(tz=pytz.timezone(settings.TIME_ZONE))
+    now_time = datetime.datetime.now(tz=pytz.timezone(settings.TIME_ZONE))
     # print(f"running DPAddScheduler() at {now_time}")
     scheduler = BackgroundScheduler(timezone=settings.TIME_ZONE)
     debug_time = now_time + datetime.timedelta(seconds=5)
     # print(f"remaining time: {debug_time - now_time}")
-    runtime = dt(2021, 12, 22, 23, 0, 0)
+    runtime = datetime.datetime(2021, 12, 22, 23, 0, 0)
     runtime_aware = runtime.astimezone(pytz.timezone(settings.TIME_ZONE))
     scheduler.add_job(profilePicAdder, 'date', run_date=debug_time)
     scheduler.start()
