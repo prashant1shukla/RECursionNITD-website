@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block content %}
+    {% load widget_tweaks %}
+    {% load staticfiles %}
+    <!-- CSS/JS IMPORTS  -->
+    <link rel="stylesheet" href="{% static 'css/detail.css' %}">
+    <link rel="stylesheet" href="{% static 'css/tag.css' %}"> {% load static %}
+    <!-- CSS/JS IMPORTS ENDS -->
+
+    <!-- PAGE CONTENT START -->
+
+    <div class="container mt-5 px-2">
+
+        <div class="table-responsive">
+            <table class="table table-responsive table-borderless">
+                <thead>
+                <tr class="bg-light">
+                    <th scope="col" width="5%">#</th>
+                    <th scope="col" width="20%">Name</th>
+                    <th scope="col" width="10%">Username</th>
+                    <th scope="col" width="20%">Current Rating</th>
+                    <th scope="col" width="20%">Max Rating</th>
+                    <th scope="col" width="20%">Is Active</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for profile in profiles %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>
+                            <i class="fa fa-check-circle-o green">
+                                {{ profile.first_name }} {{ profile.last_name }}
+                            </i>
+                        </td>
+                        <td>
+                            <a href="https://codeforces.com/profile/{{ profile.username }}" target="_blank">
+                                {{ profile.username }}
+                            </a>
+                        </td>
+                        <td><span class="ms-1">{{ profile.current_rating }}</span></td>
+                        <td>{{ profile.max_rating }}</td>
+                        <td>{{ profile.is_active }}</td>
+
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+{% endblock %}

@@ -5,13 +5,8 @@ from leaderboard.models import Codeforces
 
 # Create your views here.
 
-def view(request):
-    CFUpdater()
-    return HttpResponse('hi')
-
-
-def leaderboardHomeView(request):
+def leaderboardCFView(request):
     context = {
         'profiles': Codeforces.objects.all()
     }
-    return render(request, 'leaderboardHome.html', context)
+    return render(request, 'leaderboardCF.html', context)
