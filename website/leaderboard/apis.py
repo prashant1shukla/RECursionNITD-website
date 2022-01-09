@@ -20,7 +20,7 @@ class CodeforcesAPI:
     def getResponse(self, usernames=None) -> List[dict]:
         if not usernames:
             usernames = self.getUsers()
-        names = ';'.join(usernames)
+        names = ';'.join([self.UrlToHandle(i) for i in usernames])
         url = self.base_url + names
         res = requests.get(url)
         print(f"Response status: {res.status_code}")
@@ -34,9 +34,7 @@ class CodeforcesAPI:
 
     @staticmethod
     def getUsers() -> List[str]:
-        with open(path.join(settings.BASE_DIR, 'leaderboard', 'usernames.json')) as file:
-            js = json.load(file)
-        usernames = js['usernames']
+        usernames = user_profile_models.Profile.objects.values_list('url_Codeforces', flat=True)
         return usernames
 
     def individualRequest(self, handle: str) -> json:

@@ -7,7 +7,7 @@ from leaderboard.models import Codeforces
 
 
 def CFUpdater():
-    # print('running CFUpdater()')
+    print('running CFUpdater()')
     forces = CodeforcesAPI()
     users = forces.getResponse()
     current_time = time.time()
