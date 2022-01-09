@@ -39,7 +39,15 @@
                         </td>
                         <td><span class="ms-1">{{ profile.current_rating }}</span></td>
                         <td>{{ profile.max_rating }}</td>
-                        <td>{{ profile.is_active }}</td>
+                        {% if profile.is_active %}
+                            <td>
+                                <i class="fas fa-check"></i>
+                            </td>
+                        {% else %}
+                            <td>
+                                <i class="fas fa-times"></i>
+                            </td>
+                        {% endif %}
 
                     </tr>
                 {% endfor %}
