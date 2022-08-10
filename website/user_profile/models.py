@@ -59,7 +59,7 @@ class Profile(models.Model):
     class Meta:
         managed = True
 
-# @receiver(post_save, sender=User)
+@receiver(post_save, sender=User)
 def update_user_profile(sender, instance, created, **kwargs):
     if created:
         Profile.objects.create(user=instance)
