@@ -1,11 +1,25 @@
+from django.shortcuts import render
+from django.http import HttpResponse, JsonResponse
+from rest_framework.views import APIView 
+from rest_framework.response import Response
+from rest_framework import status
+from rest_framework import permissions
+from rest_framework import viewsets
+from rest_framework.decorators import api_view, throttle_classes
+import json
+
+from .serializers import *
+
+
+
 from django.shortcuts import render, redirect,get_object_or_404, get_list_or_404
-from .models import *
+from ..models import *
 from user_profile.models import *
 from events.models import *
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.template import loader, RequestContext
-from .forms import *
+from ..forms import *
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -40,7 +54,6 @@ from difflib import SequenceMatcher
 from django.utils import timezone
 from datetime import timedelta
 
-
 json.JSONEncoder.default = lambda self,obj: (obj.isoformat() if isinstance(obj, datetime.datetime) else None)
 
 
@@ -54,6 +67,116 @@ def bulk_tagging_add(post, tags):
         taggings.append(Taggings(post=post, tag=tag))
     Taggings.objects.bulk_create(taggings)
     return
+
+def recent_tags():
+    taggings_recent = Taggings.objects.all().order_by('updated_at')
+    tags_recent=Tags.objects.all().order_by('updated_at')
+    tags_popular=[]
+    check = []
+    if tags_recent.count()>10:
+        limit=10
+    else:
+        limit=tags_recent.count()
+    for tag in tags_recent:
+        tagging = Taggings.objects.filter(tag=tag)
+        count=tagging.count()
+        tags_popular.append([count,tag])
+        if count>0:
+            check.append(tag)
+    tags_popular.sort(key=lambda x: x[0],reverse=True)
+    tags_recent_record=[]
+    tags_popular_record=[]
+    for i in range(limit):
+        tags_popular_record.append(tags_popular[i][1])
+    count=0
+    # import pdb;pdb.set_trace();
+    while len(tags_recent_record)< len(taggings_recent) and len(tags_recent_record)< len(check) and len(tags_recent_record) < 10:
+        if taggings_recent[count].tag not in tags_recent_record:
+           tags_recent_record.append(taggings_recent[count].tag)
+        count+=1
+    return tags_recent_record
+
+def popular_tags():
+    taggings_recent = Taggings.objects.all().order_by('updated_at')
+    tags_recent=Tags.objects.all().order_by('updated_at')
+    tags_popular=[]
+    check = []
+    if tags_recent.count()>10:
+        limit=10
+    else:
+        limit=tags_recent.count()
+    for tag in tags_recent:
+        tagging = Taggings.objects.filter(tag=tag)
+        count=tagging.count()
+        tags_popular.append([count,tag])
+        if count>0:
+            check.append(tag)
+    tags_popular.sort(key=lambda x: x[0],reverse=True)
+    tags_recent_record=[]
+    tags_popular_record=[]
+    for i in range(limit):
+        tags_popular_record.append(tags_popular[i][1])
+    count=0
+    # import pdb;pdb.set_trace();
+    while len(tags_recent_record)< len(taggings_recent) and len(tags_recent_record)< len(check) and len(tags_recent_record) < 10:
+        if taggings_recent[count].tag not in tags_recent_record:
+           tags_recent_record.append(taggings_recent[count].tag)
+        count+=1
+    return tags_popular_record
+
+
+
+
+
+class PostsView(APIView):  
+  
+    def get(self, request, *args, **kwargs):  
+        posts = Posts.objects.all()  
+        serializers = PostsSerializer(posts, many=True)  
+        return Response({'status': 'success', "posts":serializers.data}, status=200)  
+  
+    def post(self, request):  
+        serializer = PostsSerializer(data=request.data)  
+        if serializer.is_valid():  
+            serializer.save()  
+            return Response({"status": "success", "data": serializer.data}, status=status.HTTP_200_OK)  
+        else:  
+            return Response({"status": "error", "data": serializer.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET', 'POST'])
+def PostDetailView(request,id):
+    # def get(self, request, *args, **kwargs):  
+    posts =get_object_or_404( Posts,pk=id)
+    serializers = PostsSerializer(posts, many=False)  
+    return Response({'status': 'success', "posts":serializers.data}, status=200)  
+
+@api_view(['GET','POST'])
+def RecentTags(request):
+    tags = recent_tags()
+    serializers = TagsSerializer(tags, many=True)
+    return Response({'status': 'success', "tags":serializers.data}, status=200)
+
+@api_view(['GET','POST'])
+def PopularTags(request):
+    tags = popular_tags()
+    serializers = TagsSerializer(tags, many=True)
+    return Response({'status': 'success', "tags":serializers.data}, status=200)
+
+@api_view(['GET', 'POST'])
+def PostsFilterByTagView(request,id):
+    # def get(self, request, *args, **kwargs):  
+    posts=[]
+    required_tag=get_object_or_404(Tags, pk=id)
+    taggings =Taggings.objects.filter(tag = required_tag)
+    for tagging in taggings:
+        posts.append(tagging.post)
+        
+    serializers = PostsSerializer(posts, many=True)  
+    return Response({'status': 'success', "posts":serializers.data}, status=200) 
+
+
+
+
 
 VALID_IMAGE_EXTENSIONS = [
     ".jpg",
@@ -145,8 +268,8 @@ def list_blogs(request):
     p_count=posts.count()
     replys=Reply.objects.all()
     '''follows=Follows.objects.all()'''
-    taggings_recent = Taggings.objects.all().order_by('-updated_at')
-    tags_recent=Tags.objects.all().order_by('-updated_at')
+    taggings_recent = Taggings.objects.all().order_by('updated_at')
+    tags_recent=Tags.objects.all().order_by('updated_at')
     tags_popular=[]
     check = []
     if tags_recent.count()>10:

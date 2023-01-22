@@ -58,6 +58,7 @@ docs/_build/
 website/db.sqlit
 # Environments
 .env
+.env.examples
 .venv
 env/
 venv/

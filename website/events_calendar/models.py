@@ -54,3 +54,5 @@ class Events_Calendar(models.Model):
         managed = True
         db_table = 'events_calendar'
         verbose_name_plural = 'Events_Calendar'
+        ordering = ['-created_at']
+ 

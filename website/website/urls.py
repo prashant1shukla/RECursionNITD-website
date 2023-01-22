@@ -50,6 +50,8 @@ urlpatterns = [
                   path('api/experiences/', include('interview_exp.api.urls', namespace='experiences_api')),
                   path('api/events/', include('events_calendar.api.urls', namespace='events_api')),
                   path('api/team/', include('team.api.urls', namespace='team_api')),
+                  path('api/blogs/', include('blog.api.urls', namespace='blogs_api')),
+                  
 
                   # JWT
                   path('api/token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
